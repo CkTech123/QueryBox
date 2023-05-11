@@ -4,7 +4,8 @@ const port = process.env.PORT || 3000;
 const { MongoClient } = require("mongodb");
 // const url = "mongodb://localhost:27017";
 const url = "mongodb+srv://query:Query@query.thd3wks.mongodb.net/test"
-const database = "querybox";
+// const database = "querybox";
+const database = "querybox"
 const client = new MongoClient(url);
 const bodyParser = require("body-parser");
 const cors = require('cors')
@@ -47,9 +48,76 @@ app.get('/msg', (req, res) => {
     const table = "messages"
     const data = show(table)
     data.then(function(val) {
+        // console.log(val)
         res.json(val)
     })
 
+})
+app.get('/count', (req, res) => {
+    const table = "messages"
+    const data = show(table)
+    var c = 0;
+    data.then(function(val) {
+        val.forEach(function(value, index) {
+            c = index + 1;
+        })
+        console.log(c)
+        res.status(200).send(String(c));
+    });
+
+
+})
+app.post('/review', async(req, res) => {
+    try {
+        const table = "reviews";
+        const name = req.body.name;
+        const message = req.body.message;
+        const db = await dbConnect(table);
+        // console.log(db)
+        // console.log(req.body)
+        const result = await db.insertOne({
+                name: name,
+                message: message
+            })
+            // console.log(result)
+        if (result.acknowledged) {
+            // res.status(200).send("Review Saved")
+            return {
+                statusCode: 200,
+                body: "Review Saved"
+            };
+        } else {
+            // res.status(500).send("Something went wrong!, Try again")
+            return {
+                statusCode: 500,
+                body: "Something went wrong!, Try again"
+            };
+        }
+    } catch (e) {
+        return e.message;
+    }
+})
+app.get('/getReviews', async(req, res) => {
+    try {
+        const table = "reviews"
+        const db = await dbConnect(table);
+        const result = await db.find({}).toArray();
+        // console.log(result)
+        const arrLength = result.length - 1;
+        if (result != undefined) {
+            const Response = {
+                "review1": result[arrLength],
+                "review2": result[arrLength - 1],
+                "review3": result[arrLength - 2]
+            }
+            console.log(Response)
+            res.status(200).send(Response);
+        } else {
+            res.status(404).send("No Review Found")
+        }
+    } catch (e) {
+        res.status(500).send(e.message)
+    }
 })
 app.listen(port, () => {
     console.log("Server started at port " + port);
@@ -60,10 +128,7 @@ async function dbConnect(table) {
         const db = result.db(database);
         return db.collection(table);
     } catch (e) {
-        return {
-            statusCode: 500,
-            body: e.message,
-        };
+        return e.message;
     }
 }
 const push = async(table, name, date, time, msg) => {
@@ -77,17 +142,13 @@ const push = async(table, name, date, time, msg) => {
         });
         return result.acknowledged
     } catch (e) {
-        // return {
-        //     statusCode: 500,
-        //     body: e.message,
-        // };
         return e.message
     }
 };
 const show = async(table) => {
     try {
         const db = await dbConnect(table)
-        const data = db.find({}).toArray()
+        const data = db.find({}).toArray();
         return data
     } catch (e) {
         return e.message

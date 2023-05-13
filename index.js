@@ -4,7 +4,7 @@ const port = process.env.PORT || 3000;
 const { MongoClient } = require("mongodb");
 // const url = "mongodb://localhost:27017";
 const url = "mongodb+srv://query:Query@query.thd3wks.mongodb.net/test"
-// const database = "querybox";
+    // const database = "querybox";
 const database = "querybox"
 const client = new MongoClient(url);
 const bodyParser = require("body-parser");
@@ -53,17 +53,15 @@ app.get('/msg', (req, res) => {
     })
 
 })
-// app.get('/count', async(req, res) => {
-//     try {
-//         const table = "messages"
-//         let c = await count(table);
-//         console.log(c);
-//         res.send(String(c))
-//     } catch (e) {
-//         res.send(e.message)
-//     }
-// })
-
+app.get('/count', async(req, res) => {
+    try {
+        const table = "messages"
+        let c = await count(table);
+        console.log(c);
+        res.send(String(c))
+    } catch (e) {
+        res.send(e.message)
+    }
 })
 app.post('/review', async(req, res) => {
     try {
@@ -152,14 +150,12 @@ const show = async(table) => {
         return e.message
     }
 }
-
-
-// async function count(table) {
-//     try {
-//         let db = await dbConnect(table);
-//         const count = await db.countDocuments({});
-//         return count;
-//     } catch (e) {
-//         return e.message
-//     }
-// }
+async function count(table) {
+    try {
+        let db = await dbConnect(table);
+        const count = await db.countDocuments({});
+        return count;
+    } catch (e) {
+        return e.message
+    }
+}

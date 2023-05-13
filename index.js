@@ -53,16 +53,16 @@ app.get('/msg', (req, res) => {
     })
 
 })
-app.get('/count', async(req, res) => {
-    try {
-        const table = "messages"
-        let c = await count(table);
-        console.log(c);
-        res.send(String(c))
-    } catch (e) {
-        res.send(e.message)
-    }
-})
+// app.get('/count', async(req, res) => {
+//     try {
+//         const table = "messages"
+//         let c = await count(table);
+//         console.log(c);
+//         res.send(String(c))
+//     } catch (e) {
+//         res.send(e.message)
+//     }
+// })
 
 })
 app.post('/review', async(req, res) => {
@@ -154,12 +154,12 @@ const show = async(table) => {
 }
 
 
-async function count(table) {
-    try {
-        let db = await dbConnect(table);
-        const count = await db.countDocuments({});
-        return count;
-    } catch (e) {
-        return e.message
-    }
-}
+// async function count(table) {
+//     try {
+//         let db = await dbConnect(table);
+//         const count = await db.countDocuments({});
+//         return count;
+//     } catch (e) {
+//         return e.message
+//     }
+// }
